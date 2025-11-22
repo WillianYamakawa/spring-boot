@@ -1,5 +1,7 @@
 package com.tarefa.aula.dtos.venda;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDateTime;
 
 public class VendaListagemDTO {
@@ -7,7 +9,10 @@ public class VendaListagemDTO {
     private String clienteNome;
     private String clienteDocumento;
     private String usuarioNome;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dataVenda;
+
     private double totalPrice;
 
     public VendaListagemDTO(int id, String clienteNome, String clienteDocumento, String usuarioNome, LocalDateTime dataVenda, double totalPrice) {

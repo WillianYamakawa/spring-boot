@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "produto")
-@SQLRestriction("ativo = 1")
 public class Produto {
 
     @Id

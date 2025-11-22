@@ -7,22 +7,19 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "venda")
-@SQLRestriction("ativo = 1")
 public class Venda {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "cliente_id", nullable = false)
-    private Cliente cliente;
+    @Column(name = "cliente_id", nullable = false)
+    private Integer clienteId;
 
-    @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    @Column(name = "usuario_id", nullable = false)
+    private Integer usuarioId;
 
-    @Column(name = "data_venda")
+    @Column(name = "data_venda", nullable = false)
     private LocalDateTime dataVenda = LocalDateTime.now();
 
     @Column(nullable = false)
@@ -35,11 +32,11 @@ public class Venda {
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
-    public Cliente getCliente() { return cliente; }
-    public void setCliente(Cliente cliente) { this.cliente = cliente; }
+    public Integer getClienteId() { return clienteId; }
+    public void setClienteId(Integer clienteId) { this.clienteId = clienteId; }
 
-    public Usuario getUsuario() { return usuario; }
-    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+    public Integer getUsuarioId() { return usuarioId; }
+    public void setUsuarioId(Integer usuarioId) { this.usuarioId = usuarioId; }
 
     public LocalDateTime getDataVenda() { return dataVenda; }
     public void setDataVenda(LocalDateTime dataVenda) { this.dataVenda = dataVenda; }

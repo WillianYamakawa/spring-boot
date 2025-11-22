@@ -23,6 +23,9 @@ public class UsuarioService {
         var usuario = usuarioRepository.findByUsuario(user.getUsuario())
                 .orElseThrow(() -> new ValidacaoException("Usuário não encontrado"));
 
+        if(usuario.getAtivo() == false)
+            throw new ValidacaoException("Usuário inativo");
+
         var hash = HashUtil.sha256(user.getSenha());
 
         if (!usuario.getSenhaHash().equals(hash)) {
@@ -54,7 +57,7 @@ public class UsuarioService {
     }
 
     public List<UsuarioListagemDTO> listar() {
-        var usuarios = usuarioRepository.findAll();
+        var usuarios = usuarioRepository.findAllByAtivoTrue();
 
         return usuarios
                 .stream()

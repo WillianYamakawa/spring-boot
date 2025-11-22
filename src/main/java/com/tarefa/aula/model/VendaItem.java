@@ -10,13 +10,11 @@ public class VendaItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "venda_id", nullable = false)
-    private Venda venda;
+    @Column(name = "venda_id", nullable = false)
+    private Integer vendaId;
 
-    @ManyToOne
-    @JoinColumn(name = "produto_id", nullable = false)
-    private Produto produto;
+    @Column(name = "produto_id", nullable = false)
+    private Integer produtoId;
 
     @Column(nullable = false)
     private Integer quantidade = 1;
@@ -27,23 +25,54 @@ public class VendaItem {
     @Column(nullable = false)
     private Double total;
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getVendaId() {
+        return vendaId;
+    }
+
+    public void setVendaId(Integer vendaId) {
+        this.vendaId = vendaId;
+    }
+
+    public Integer getProdutoId() {
+        return produtoId;
+    }
+
+    public void setProdutoId(Integer produtoId) {
+        this.produtoId = produtoId;
+    }
+
+    public Integer getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(Integer quantidade) {
+        this.quantidade = quantidade;
+    }
+
+    public Double getPrecoUnitario() {
+        return precoUnitario;
+    }
+
+    public void setPrecoUnitario(Double precoUnitario) {
+        this.precoUnitario = precoUnitario;
+    }
+
+    public Double getTotal() {
+        return total;
+    }
+
+    public void setTotal(Double total) {
+        this.total = total;
+    }
+
     // getters e setters
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
-
-    public Venda getVenda() { return venda; }
-    public void setVenda(Venda venda) { this.venda = venda; }
-
-    public Produto getProduto() { return produto; }
-    public void setProduto(Produto produto) { this.produto = produto; }
-
-    public Integer getQuantidade() { return quantidade; }
-    public void setQuantidade(Integer quantidade) { this.quantidade = quantidade; }
-
-    public Double getPrecoUnitario() { return precoUnitario; }
-    public void setPrecoUnitario(Double precoUnitario) { this.precoUnitario = precoUnitario; }
-
-    public Double getTotal() { return total; }
-    public void setTotal(Double total) { this.total = total; }
 }
 

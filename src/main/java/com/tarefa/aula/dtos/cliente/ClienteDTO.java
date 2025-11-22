@@ -29,7 +29,6 @@ public class ClienteDTO {
         }
     }
 
-
     public int getId() {
         return id;
     }

@@ -16,7 +16,7 @@ public class ClienteService {
     private ClienteRepository clienteRepository;
 
     public List<ClienteDTO> listar(){
-        var clientes = clienteRepository.findAll();
+        var clientes = clienteRepository.findAllByAtivoTrue();
 
         return clientes
                 .stream()

@@ -16,7 +16,7 @@ public class ProdutoService {
     private ProdutoRepository repository;
 
     public List<ProdutoDTO> listar(){
-        var produtos = repository.findAll();
+        var produtos = repository.findAllByAtivoTrue();
 
         return produtos
                 .stream()

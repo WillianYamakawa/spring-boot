@@ -1,9 +1,14 @@
 package com.tarefa.aula.service;
 
 import com.tarefa.aula.dtos.produto.ProdutoDTO;
+import com.tarefa.aula.dtos.venda.VendaCadastroDTO;
+import com.tarefa.aula.dtos.venda.VendaListagemDTO;
 import com.tarefa.aula.exceptions.ValidacaoException;
+import com.tarefa.aula.helpers.UsuarioLogadoHelper;
 import com.tarefa.aula.model.Produto;
-import com.tarefa.aula.repository.ProdutoRepository;
+import com.tarefa.aula.model.Venda;
+import com.tarefa.aula.model.VendaItem;
+import com.tarefa.aula.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,49 +16,96 @@ import java.util.List;
 
 @Service
 public class VendaService {
+
     @Autowired
-    private ProdutoRepository repository;
+    private ProdutoRepository produtoRepository;
 
-    public List<ProdutoDTO> listar(){
-        var produtos = repository.findAll();
+    @Autowired
+    private ClienteRepository clienteRepository;
 
-        return produtos
+    @Autowired
+    private VendaRepository vendaRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private VendaItemRepository vendaItemRepository;
+
+    public List<VendaListagemDTO> listar(){
+        var vendas = vendaRepository.findAllByAtivoTrue();
+
+        return vendas
                 .stream()
-                .map(e -> new ProdutoDTO(
-                        e.getId(),
-                        e.getNome(),
-                        e.getDescricao(),
-                        e.getPreco(),
-                        e.getEstoque()
-                ))
+                .map(e -> {
+
+                    var cliente = clienteRepository.findById(e.getClienteId()).get();
+
+                    var usuario = usuarioRepository.findById(e.getUsuarioId()).get();
+
+                    return new VendaListagemDTO(
+                            e.getId(),
+                            cliente.getNome(),
+                            cliente.getDocumento(),
+                            usuario.getUsuario(),
+                            e.getDataVenda(),
+                            e.getValorTotal()
+                    );
+                })
                 .toList();
     }
 
-    public int cadastrar(ProdutoDTO model) {
+    public int cadastrar(VendaCadastroDTO model) {
         model.validar();
 
-        var entity = new Produto();
+        var entity = new Venda();
+        entity.setClienteId(model.getIdCliente());
+        entity.setUsuarioId(UsuarioLogadoHelper.getUsuarioLogado().getId());
+        entity.setValorTotal(model
+                .getItems()
+                .stream()
+                .mapToDouble(e -> e.getPrecoUnitario() * e.getQuantidade())
+                .sum()
+        );
 
-        loadEntity(entity, model);
+        vendaRepository.save(entity);
 
-        repository.save(entity);
+        for(var item : model.getItems()){
+            var produto = produtoRepository.findById(item.getIdProduto())
+                    .orElseThrow(() -> new ValidacaoException("Produto não encontrado"));
+
+            var itemEntity = new VendaItem();
+            itemEntity.setVendaId(entity.getId());
+            itemEntity.setProdutoId(item.getIdProduto());
+            itemEntity.setQuantidade(item.getQuantidade());
+            itemEntity.setPrecoUnitario(item.getPrecoUnitario());
+            itemEntity.setTotal(item.getQuantidade() * item.getPrecoUnitario());
+
+            vendaItemRepository.save(itemEntity);
+
+            produto.setEstoque(produto.getEstoque() - item.getQuantidade());
+
+            produtoRepository.save(produto);
+        }
 
         return entity.getId();
     }
 
     public void inativar(int id) {
-        var produto = repository.findById(id)
-                .orElseThrow(() -> new ValidacaoException("Produto não encontrado"));
+        var venda = vendaRepository.findById(id)
+                .orElseThrow(() -> new ValidacaoException("Venda não encontrada"));
 
-        produto.setAtivo(false);
+        venda.setAtivo(false);
 
-        repository.save(produto);
-    }
+        var items = vendaItemRepository.findAllByVendaId(id);
 
-    private void loadEntity(Produto entity, ProdutoDTO model){
-        entity.setNome(model.getNome());
-        entity.setDescricao(model.getDescricao());
-        entity.setPreco(model.getPreco());
-        entity.setEstoque(model.getEstoque());
+        for(var item : items){
+            var produto = produtoRepository.findById(item.getProdutoId())
+                    .orElseThrow(() -> new ValidacaoException("Produto não encontrado"));
+
+            produto.setEstoque(produto.getEstoque() + item.getQuantidade());
+        }
+
+        vendaRepository.save(venda);
     }
 }
