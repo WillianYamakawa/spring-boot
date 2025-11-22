@@ -12,7 +12,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOriginPatterns(Arrays.asList("*")); // permite qualquer origem
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setExposedHeaders(Arrays.asList("*"));
         config.setAllowCredentials(false);
