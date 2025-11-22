@@ -4,6 +4,8 @@ import com.tarefa.aula.dtos.http.ApiResult;
 import com.tarefa.aula.dtos.produto.ProdutoDTO;
 import com.tarefa.aula.dtos.venda.VendaCadastroDTO;
 import com.tarefa.aula.dtos.venda.VendaListagemDTO;
+import com.tarefa.aula.dtos.venda.VendaSelecaoDTO;
+import com.tarefa.aula.dtos.venda.VendaSelecaoItemDTO;
 import com.tarefa.aula.service.ProdutoService;
 import com.tarefa.aula.service.VendaService;
 import org.springframework.http.HttpStatus;
@@ -36,11 +38,11 @@ public class VendaController {
         return ResponseEntity.ok(ApiResult.fromSuccess(result));
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<ApiResult<List<VendaListagemDTO>>> get(@PathVariable int id) {
-//        var result = service.();
-//        return ResponseEntity.ok(ApiResult.fromSuccess(result));
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResult<VendaSelecaoDTO>> get(@PathVariable int id) {
+        var result = service.get(id);
+        return ResponseEntity.ok(ApiResult.fromSuccess(result));
+    }
 
     @PatchMapping("/inativar/{id}")
     public ResponseEntity<ApiResult<String>> inativar(@PathVariable int id) {
