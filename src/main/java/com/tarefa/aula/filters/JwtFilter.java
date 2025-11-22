@@ -30,32 +30,32 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String header = request.getHeader("Authorization");
 
-        if (header == null || !header.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
+        if (header != null && header.startsWith("Bearer ")) {
+
+            String token = header.substring(7);
+
+            try {
+                var jwt = JwtUtil.validarToken(token);
+
+                Integer userId = jwt.get("id", Integer.class);
+                String username = jwt.getSubject();
+
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(
+                                new UsuarioLogado(username, userId),
+                                null,
+                                List.of()
+                        );
+
+                SecurityContextHolder.getContext().setAuthentication(auth);
+
+            } catch (Exception ex) {
+                // Token inválido → limpa contexto, mas NÃO responde aqui
+                SecurityContextHolder.clearContext();
+            }
         }
 
-        String token = header.substring(7);
-
-        try {
-            // Extrai dados do token
-            var jwt = JwtUtil.validarToken(token);
-
-            Integer userId = jwt.get("id", Integer.class);
-            String username = jwt.getSubject();
-
-            UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(
-                            new UsuarioLogado(username, userId), null, List.of()
-                    );
-
-            SecurityContextHolder.getContext().setAuthentication(auth);
-
-        } catch (Exception ex) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
-
+        // Sempre deixe continuar, nunca retorne erro aqui
         filterChain.doFilter(request, response);
     }
 }
